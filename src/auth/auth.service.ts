@@ -30,6 +30,14 @@ export class AuthService {
       throw new BadRequestException('User Not Found');
     }
 
+    const isSessionExist = await this.sessionService.getSessionBy({
+      userId: isExist.id,
+    });
+    //delete session
+    if (isSessionExist) {
+      await this.sessionService.deleteSessionBy(isSessionExist.id);
+    }
+
     const isPasswordMatched = await this.userService.isPasswordMatched(
       userData.password,
       isExist.password,
@@ -46,7 +54,6 @@ export class AuthService {
 
     const session = {
       userId: isExist.id,
-      email: isExist.email,
       token: access_token,
     };
 
