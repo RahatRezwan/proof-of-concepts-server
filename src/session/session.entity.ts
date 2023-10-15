@@ -16,4 +16,7 @@ export class Session {
 
   @Column({ type: 'varchar', length: 600, nullable: false })
   token: string;
+
+  @CreateDateColumn()
+  lastLogin: Date;
 }

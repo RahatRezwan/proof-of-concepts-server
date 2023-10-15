@@ -8,6 +8,7 @@ export const dataSourceOptions: DataSourceOptions = {
   database: 'poc_db',
   entities: ['dist/**/*.entity.js'],
   migrations: ['dist/db/migrations/*.js'],
+  synchronize: true,
 };
 
 const dataSource = new DataSource(dataSourceOptions);

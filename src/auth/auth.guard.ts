@@ -20,9 +20,8 @@ export class AuthGuard implements CanActivate {
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest();
     const sessionId = this.extractTokenFromCookies(request);
-    console.log({ sessionId });
     if (!sessionId) {
-      throw new UnauthorizedException();
+      throw new UnauthorizedException("You don't have any token");
     }
 
     try {
@@ -31,24 +30,23 @@ export class AuthGuard implements CanActivate {
         id: Number(sessionId),
       });
 
-      //   if (!session) {
-      //     throw new UnauthorizedException();
-      //   }
+      if (!session) {
+        throw new UnauthorizedException('your token is invalid');
+      }
 
-      const payload = await this.jwtService.verifyAsync(session.token, {
+      console.log('payload', session);
+      const payload = this.jwtService.verify(session.token, {
         secret: this.configService.get<string>('JWT_SECRET'),
       });
 
-      console.log({ payload });
-
       //error if payload is expired or invalid
       if (!payload) {
-        throw new UnauthorizedException();
+        throw new UnauthorizedException('your token is invalid');
       }
 
       request['user'] = payload;
     } catch {
-      throw new UnauthorizedException();
+      throw new UnauthorizedException('Unauthorized Access');
     }
     return true;
   }

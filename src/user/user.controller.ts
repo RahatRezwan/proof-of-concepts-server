@@ -1,4 +1,4 @@
-import { Controller, Get, UseGuards } from '@nestjs/common';
+import { Controller, Get, Param, UseGuards } from '@nestjs/common';
 import { UserService } from './user.service';
 import { AuthGuard } from 'src/auth/auth.guard';
 
@@ -9,9 +9,9 @@ export class UserController {
   //get user data
   @UseGuards(AuthGuard)
   @Get('/:id')
-  async getUserData(id: number) {
+  async getUserData(@Param('id') id: string) {
     try {
-      const result = await this.userService.findOne({ id });
+      const result = await this.userService.findOne({ id: Number(id) });
       return {
         message: 'Get user data successfully',
         data: result,

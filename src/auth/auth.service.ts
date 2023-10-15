@@ -55,6 +55,7 @@ export class AuthService {
     const session = {
       userId: isExist.id,
       token: access_token,
+      lastLogin: new Date(),
     };
 
     const sessionData = await this.sessionService.createSession(session);
