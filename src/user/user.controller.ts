@@ -12,9 +12,10 @@ export class UserController {
   async getUserData(@Param('id') id: string) {
     try {
       const result = await this.userService.findOne({ id: Number(id) });
+      const { password, ...user } = result;
       return {
         message: 'Get user data successfully',
-        data: result,
+        data: user,
       };
     } catch (error) {
       console.log('Error: ', error);

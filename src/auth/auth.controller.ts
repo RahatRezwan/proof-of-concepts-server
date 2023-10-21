@@ -1,7 +1,7 @@
 import { Body, Controller, Get, Post, Req, Res } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { User } from 'src/user/user.entity';
-import { Response } from 'express';
+import { Request, Response } from 'express';
 import { ConfigService } from '@nestjs/config';
 
 @Controller('auth')
@@ -12,19 +12,24 @@ export class AuthController {
   ) {}
 
   @Post('/login')
-  async login(@Body() body: User, @Res({ passthrough: true }) res: Response) {
+  async login(
+    @Body() body: User,
+    @Req() req: Request,
+    @Res({ passthrough: true }) res: Response,
+  ) {
     try {
       const token = await this.authService.login(body);
 
-      res.cookie('sessionId', token, {
+      const Browser = req.get('User-Agent');
+
+      res.cookie('access_token', token, {
         secure: true,
         httpOnly: true,
-        expires: new Date(this.configService.get<string>('SESSION_EXPIRED_IN')),
+        maxAge: Number(this.configService.get<string>('SESSION_EXPIRED_IN')),
       });
 
       return {
         message: 'Login successfully',
-        data: token,
       };
     } catch (error) {
       console.log('Error: ', error);
@@ -39,9 +44,10 @@ export class AuthController {
   async register(@Body() body: User) {
     try {
       const result = await this.authService.register(body);
+      const { password, ...user } = result;
       return {
         message: 'Register successfully',
-        data: result,
+        data: user,
       };
     } catch (error) {
       console.log('Error: ', error);

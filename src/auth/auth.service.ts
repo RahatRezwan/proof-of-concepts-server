@@ -58,8 +58,8 @@ export class AuthService {
       lastLogin: new Date(),
     };
 
-    const sessionData = await this.sessionService.createSession(session);
+    await this.sessionService.createSession(session);
 
-    return sessionData.id;
+    return access_token;
   }
 }
